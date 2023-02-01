@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'BATM FONT' ;
+  src: url('/src/batm.ttf');
+  format:('ttf');
+  font-style: normal;
+}
+
+h1{
+  font-family: 'BATM FONT';
+  font-size: 5rem;
+}
