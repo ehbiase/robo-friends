@@ -1,4 +1,5 @@
 @font-face {
+  font-display:swap;
   font-family: 'BATM FONT' ;
   src: url('/src/batm.ttf');
   format:('ttf');
