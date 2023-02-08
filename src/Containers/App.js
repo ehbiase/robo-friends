@@ -1,50 +1,56 @@
 import React, { Component } from "react";
-import CardList from "../Components/CardList";
+import { connect } from "react-redux";
+
 import SearchBox from "../Components/SearchBox";
-import "./App.css";
 import Scroll from "../Components/Scroll";
+import "./App.css";
+
+import { requestRobots, setSearchField } from "../actions";
+import CardList from "../Components/CardList";
 import ErrorBoundry from "../Components/ErrorBoundry";
+import Header from "../Components/Header";
+
+const mapStateToProps = (state) => {
+  return {
+    searchField: state.searchRobots.searchField,
+    robots: state.requestRobots.robots,
+    isPending: state.requestRobots.isPending,
+  };
+};
+
+const mapDispatchtoProps = (dispatch) => {
+  return {
+    onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+    onRequestRobots: () => dispatch(requestRobots()),
+  };
+};
 
 class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      robots: [],
-      searchfield: "",
-    };
-  }
-
   componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.json())
-      .then((users) => this.setState({ robots: users }));
+    this.props.onRequestRobots();
   }
-
-  onSearchChange = (event) => {
-    this.setState({ searchfield: event.target.value });
-  };
 
   render() {
-    const { robots, searchfield } = this.state;
+    const { searchField, onSearchChange, robots, isPending } = this.props;
     const filteredRobots = robots.filter((robot) => {
-      return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+      return robot.name.toLowerCase().includes(searchField.toLowerCase());
     });
-    if (!robots.length) {
-      return <h2>Loading</h2>;
-    } else {
-      return (
-        <div className="tc ">
-          <h1>RoboFriends</h1>
-          <SearchBox searchChange={this.onSearchChange} />
-          <Scroll>
+    return (
+      <div className="tc">
+        <Header />
+        <SearchBox searchChange={onSearchChange} />
+        <Scroll>
+          {isPending ? (
+            <h1>Loading</h1>
+          ) : (
             <ErrorBoundry>
               <CardList robots={filteredRobots} />
             </ErrorBoundry>
-          </Scroll>
-        </div>
-      );
-    }
+          )}
+        </Scroll>
+      </div>
+    );
   }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchtoProps)(App);
